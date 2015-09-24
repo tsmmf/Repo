@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+<body>
+    
+    <link rel="stylesheet" href="style.css">
+    
+    <style type="text/css">
+        .left{float:left;}
+        .right{float:right;}
+    </style>
+    
+    <div id="result">
+        <h1>
+            <script>
+
+                var parameters = location.search.substring(1).split("&");
+                var temp = parameters[0].split("=");
+                l = unescape(temp[1]);
+    
+                if (typeof(Storage) !== "undefined") {
+                    // Store
+                    localStorage.setItem("Username", l);
+                    // Retrieve
+                    document.getElementById("result").innerHTML = "Hello "+localStorage.getItem("Username").fontsize(4);        
+                } 
+                else {
+                    document.getElementById("result").innerHTML = "Sorry, your browser does not support Web Storage...";
+                }
+
+            </script>
+        </h1>
+    </div>
+
+
+    <h2 style= text align="center">World's Largest Armies</h2>
+        
+    <img class="left" src="https://chart.googleapis.com/chart?chs=400x150&chd=t:31,22,18,15,14&cht=p3&chl=China|USA|India|North Korea|Russia" height="400" width="700">
+   <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+   
+   
+
+         <script type="text/javascript" src="https://www.google.com/jsapi"></script>
+    <script type="text/javascript">
+      google.load("visualization", "1", {packages:["treemap"]});
+      google.setOnLoadCallback(drawChart);
+      function drawChart() {
+        var data = google.visualization.arrayToDataTable([
+          ['Location', 'Parent', 'Market trade volume (size)', 'Market increase/decrease (color)'],
+          ['Largest Armies',    null,                100,                               100],
+          ['China',   'Largest Armies',             31,                               14],
+          ['USA',     'Largest Armies',             22,                               20],
+          ['India',      'Largest Armies',           18,                               22],
+          ['North Korea', 'Largest Armies',            15,                               26],
+          ['Russia',    'Largest Armies',             14,                               31]
+          
+        ]);
+
+        tree = new google.visualization.TreeMap(document.getElementById('chart_div'));
+
+        tree.draw(data, {
+          minColor: '#f00',
+          midColor: '#ddd',
+          maxColor: '#0d0',
+          headerHeight: 15,
+          fontColor: 'black',
+          showScale: true
+        });
+
+      }
+    </script>
+
+    <div id="chart_div" style="width: 900px; height: 500px;"></div>
+
+  
+        
+    <br><br>
+    
+   
+ <script src="http://ajax.aspnetcdn.com/ajax/jquery/jquery-1.5.1.js">
+</script>
+ <script type="text/javascript">
+ $(document).ready(function () {
+ $('#btnTweet').click(function (e) {
+ 
+ var textToTweet = "Hi I am tweeting from here";
+ if (textToTweet.length > 140) {
+ alert('Tweet should be less than 140 Chars');
+ }
+ else {
+ var twtLink = 'http://twitter.com/home?status=' +encodeURIComponent(textToTweet);
+ window.open(twtLink,'_blank');
+ }
+ });
+ });
+ 
+</script>
+ <style type="text/css">
+ #btnTweet {
+ width: 159px;
+ height: 38px;
+ }
+ </style>
+</head>
+ <body>
+ <h1>tweet from Here</h1>
+ <button id="btnTweet">Tweet</button>
+
+     
+     <a class="twitter-timeline" href="https://twitter.com/ShedhaniTarun" data-widget-id="646956781965459456">Tweets by @ShedhaniTarun</a>
+<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+"://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+        
+</body>
+</html>

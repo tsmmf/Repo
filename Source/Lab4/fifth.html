@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="" ng-app="Marshup">
+<head>
+  <meta t="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Home</title>
+  <script src="js/angular.min.js"></script>
+  <script src="http://maps.google.com/maps?file=api&v=2&key=AIzaSyCUmdbdp0p06sEsz1jcC-Dqk_W5IbPNUWA"
+          type="text/javascript"></script>
+  <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+  <script type="text/javascript" src="//platform.twitter.com/widgets.js"></script>
+
+  <link rel="stylesheet" href="css/main.css">  
+
+  <script type="text/javascript">
+//<![CDATA[
+angular.module('Marshup',[]).controller('googlemapoutput',function($scope, $http){
+    var map = new GMap2(document.getElementById("map"));
+    var mapOptions;
+    $scope.initialize = function () {
+        navigator.geolocation.getCurrentPosition(function (position) {
+            var pos = new google.maps.LatLng(
+            position.coords.latitude,
+            position.coords.longitude);
+            map.setCenter(pos, 13);
+    map.addOverlay(new GMarker(pos));
+        });
+    };
+    google.maps.event.addDomListener(window, 'load', $scope.initialize);
+    
+$scope.getInfo = function(){
+    var point=document.getElementById('location').value;
+   console.log(point);
+  $http.get('http://api.wunderground.com/api/36b799dc821d5836/conditions/q/MO/'+point+'.json').success(function(data) {
+      console.log(data);
+          var temp = data.current_observation.temp_f;
+                weather = data.current_observation.weather;
+             console.log(temp);
+        var latitude=data.current_observation.display_location.latitude;
+      console.log(latitude);
+        var longitude=data.current_observation.display_location.longitude; 
+      
+var point = new GLatLng(latitude, longitude);
+    
+map.setCenter(point, 13);
+    map.openInfoWindow(map.getCenter(),
+document.innerHTML = temp +" &deg; F and " + weather + "" + "<br>"+"Latitude: "+latitude +"; Longitude: "+ longitude);
+    map.addOverlay(new GMarker(point));
+})
+}
+});
+//]]>
+</script>
+
+        
+        <script>
+            $(document).ready(function () {
+           $("#Name").html("Welcome "+localStorage.getItem("name"));
+                            });
+    </script>
+</head>
+
+<body>
+
+<h3 id="Name"></h3><br>
+<div class="wrapp" ng-controller="googlemapoutput">
+         <div class="row">
+                <input type="text" placeholder="Input city name here" ng-model="location" id="location"/>
+                <button id="btn" ng-click="getInfo()">
+                    Get information of weather, latitude and longitude
+                </button>
+                 <br/></br>
+            </div>
+            <div id="map" style="width: 500px; height: 300px"></div>
+
+        <br>       
+<a href="https://twitter.com/share" class="twitter-share-button" data-lang="en">Tweet</a>
+
+    </div>        
+        
+        
+        
+    </body>
+</html>
