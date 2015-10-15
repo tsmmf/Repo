@@ -1,2 +1,0 @@
-// Sample java code
-// Empty file as of now
