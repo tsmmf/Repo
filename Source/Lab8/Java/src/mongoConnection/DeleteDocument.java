@@ -13,46 +13,33 @@ import com.ibm.json.java.JSONObject;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DB;
 import com.mongodb.DBCollection;
+import com.mongodb.DBCursor;
 import com.mongodb.MongoClient;
 import com.mongodb.MongoClientURI;
-import com.mongodb.WriteResult;
 
 /**
- * Servlet implementation class PutDocument
+ * Servlet implementation class DeleteDocument
  */
-@WebServlet("/PutDocument")
-public class PutDocument extends HttpServlet {
+@WebServlet("/DeleteDocument")
+public class DeleteDocument extends HttpServlet {
 	private static final long serialVersionUID = 1L;
        
     /**
      * @see HttpServlet#HttpServlet()
      */
-    public PutDocument() {
+    public DeleteDocument() {
         super();
         // TODO Auto-generated constructor stub
     }
 
 	/**
-	 * @throws IOException 
-	 * @throws ServletException 
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */
-   /* protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException{
-    	
-    	response.setHeader("Access-Control-Allow-Origin", "*");
-    	response.setHeader("Access-Control-Allow-Methods", "POST,GET");
-    	
-    	doPost(request, response);
-    }*/
-    
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
 		response.setHeader("Access-Control-Allow-Origin", "*");
-		response.setHeader("Access-Control-Allow-Methods", "POST");
-		response.setHeader("Access-Control-Allow-Headers", "Content-Type");
-		response.setHeader("Access-Control-Max-Age", "86400");
 		
-		System.out.println("I have called the post servlet");
+		System.out.println("Delete servlet called");
 		
 		StringBuilder buffer = new StringBuilder();
 		BufferedReader reader = request.getReader();
@@ -63,26 +50,33 @@ public class PutDocument extends HttpServlet {
 			buffer.append(line);
 		}
 		String data = buffer.toString();
-		System.out.println("Data ::: " + data);
-		
+				
 		JSONObject params = (JSONObject)JSON.parse(data);
 		BasicDBObject user1 = new BasicDBObject(params);
 		
-		for (Object key : params.keySet().toArray()){
-			user1.put(key.toString(), params.get(key));
-		}
+		String name = (String) params.get("name");
+		String email = (String) params.get("email");
+		
+		System.out.println("Username : " + name);
+		System.out.println("Email : " + email);
 		
 		MongoClientURI uri = new MongoClientURI("mongodb://root:root@ds035014.mongolab.com:35014/sampledb");
 		MongoClient client = new MongoClient(uri);
 		
 		DB db = client.getDB(uri.getDatabase());
 		DBCollection users = db.getCollection("sample");
-		WriteResult result = users.insert(user1);		
 		
-		response.getWriter().write(result.toString());
-		BasicDBObject newDocument = new BasicDBObject();  
-		newDocument.put("name", "shedhta");  
-		newDocument.put("email", "tarun.shedhani@vzw.com");  
-		newDocument.put("password", "ShedhaniTarun"); 		
+		BasicDBObject whereQuery = new BasicDBObject();
+	    whereQuery.put("email", email);
+	    whereQuery.put("name", name);
+	    DBCursor cursor = users.find(whereQuery);	    
+	    //cursor = users.find(whereQuery);
+        if (cursor.hasNext()){
+        	
+        	users.remove(whereQuery);
+        }
+        else {
+        	System.out.println("Wrong");
+        }	   
 	}
 }

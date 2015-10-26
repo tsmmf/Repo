@@ -39,7 +39,10 @@ public class GetDocument extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
 	
-		response.setHeader("Access-Control-Allow-Origin", "*");		
+		response.setHeader("Access-Control-Allow-Origin", "*");	
+		response.setHeader("Access-Control-Allow-Methods", "POST,GET,PUT,DELETE");
+		response.setHeader("Access-Control-Allow-Headers", "Content-Type");
+		response.setHeader("Access-Control-Max-Age", "86400");
 		
 		String name = request.getParameter("name");
 		String pass = request.getParameter("password");	
@@ -62,7 +65,9 @@ public class GetDocument extends HttpServlet {
 		DB db = client.getDB(uri.getDatabase());		
 		DBCollection collect = db.getCollection("sample");
 		
-		BasicDBObject query = new BasicDBObject("name", name);
+		BasicDBObject query = new BasicDBObject();
+		query.put("name", name);
+		query.put("password", pass);
 		
 		DBCursor docs = collect.find(query);
 		response.getWriter().write(docs.toArray().toString());

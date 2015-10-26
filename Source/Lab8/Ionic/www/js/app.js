@@ -1,4 +1,4 @@
-angular.module('app', ['ionic','ngCordova'])
+angular.module('app', ['ionic'])
 
 .config(function($stateProvider, $urlRouterProvider) {
 
@@ -44,7 +44,7 @@ angular.module('app', ['ionic','ngCordova'])
 
 })
 
-.controller('Hypertension', function($scope, $http, $httpParamSerializerJQLike, $ionicPopup, $cordovaVibration){
+.controller('Hypertension', function($scope, $http, $httpParamSerializerJQLike, $ionicPopup){
     $scope.detectLogic = function(sbp,dbp,name) {
         // Do some computation..
         var sbpValue=parseFloat(sbp);        
@@ -61,18 +61,22 @@ angular.module('app', ['ionic','ngCordova'])
         
         if(sbpValue<110 && dbpValue<140){
         
-            if (flag == 1){  
+            if (flag < 1) {
+                
                 return {
-                    "classNameForResult": "codegreen",
-                    "results": "Normal : You don't have hypertension."   
+            
+                "classNameForResult": "codegreen",
+                "results": "Normal : You don't have hypertension."   
                 }
             }
-            else {
-                return{
-                    "classNameForResult": "codegreen",
-                    "results": "You are doing good."    
+            else if (flag > 0) {
+                
+                return {
+            
+                "classNameForResult": "codegreen",
+                "results": "Advice : you are doing good."    
                 }
-            }          
+            }
         }             
             
         if(sbpValue>=110 && sbpValue<=139 && dbpValue<90)
@@ -104,16 +108,19 @@ angular.module('app', ['ionic','ngCordova'])
         document.getElementById("result").className = style["classNameForResult"]; 
 		document.getElementById("suggestion").className=style["classNameForSuggestion"];
         document.getElementById("result").innerHTML=style["results"];
-        
-        $cordovaVibration.vibrate(200);
     }
     
      $scope.delete = function() {
-  
+        console.log("inside delete function");
+        var email = sessionStorage.getItem("userEmail");
+        var name = sessionStorage.getItem("userName");
         $http({
-            method: 'DELETE',
-            url : 'https://api.mongolab.com/api/1/databases/sampledb/collections/sample/'+ sessionStorage.getItem("userID")+'?apiKey=hr13z2FWkjHZZ2xmn2AWBDeqOm0Y1RfU',
-            contentType: "application/json"
+            method: 'POST',
+            url : 'http://localhost:9080/FirstMongoProject/DeleteDocument',
+            data: { "name": name,
+                    "email": email                 
+                  },
+            headers: {'Content-Type': 'application/x-www-form-urlencoded'}
         }).success(function(data) {
             console.log(data);
             var alertPopup = $ionicPopup.alert({
@@ -135,14 +142,13 @@ angular.module('app', ['ionic','ngCordova'])
     console.log(username);
     console.log(password);
     $http({
-        method: 'POST',
-        url : 'https://api.mongolab.com/api/1/databases/sampledb/collections/sample?apiKey=hr13z2FWkjHZZ2xmn2AWBDeqOm0Y1RfU',
-        data: JSON.stringify({
-                    name: username,
-                    password: password,
-                    email: email
-        }),
-    contentType: "application/json"
+         method: 'POST',
+         headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+         url : "http://localhost:9080/FirstMongoProject/UpdateDocument",
+         data: { "name": username,
+                 "email": email,
+                 "password": password
+               }
     }).success(function(data) {
         $scope.username ="";
         $scope.password ="";
@@ -165,19 +171,19 @@ angular.module('app', ['ionic','ngCordova'])
 
     $scope.pageClass = 'login';
     $scope.login = function(name, pass) {
-    console.log("inside login function");
-    console.log(name);
-    console.log(pass);
+    console.log("inside login function");  
     $http({
         method: 'GET',
-        url : 'https://api.mongolab.com/api/1/databases/sampledb/collections/sample?q={"name": "' + name + '", "password": "' + pass + '"}&apiKey=hr13z2FWkjHZZ2xmn2AWBDeqOm0Y1RfU',
+        url : 'http://localhost:9080/FirstMongoProject/GetDocument?name='+name+'&password='+pass,
         contentType: "application/json"
     }).success(function(data) {
         console.log(data);
         if(data!=""){
-           sessionStorage.setItem("userID", data["0"]._id.$oid);
-           //console.log (data["0"]._id.$oid);
-           //console.log (data["0"].email);
+           sessionStorage.setItem("userEmail", data["0"].email);
+           sessionStorage.setItem("userName", data["0"].name);
+           console.log (data["0"]._id.$oid);
+           console.log (data["0"].email);
+           console.log (data["0"].name);
            window.location.assign("#/hypertension");        
         }
         else {            
@@ -199,12 +205,17 @@ angular.module('app', ['ionic','ngCordova'])
 
     $scope.pageClass = 'changePass';
     $scope.changePass = function(oldpass, newpass) {
-  
+    console.log("inside change password function");
+        
     $http({
-        method: 'PUT',
-        url : 'https://api.mongolab.com/api/1/databases/sampledb/collections/sample/'+ sessionStorage.getItem("userID")+'?apiKey=hr13z2FWkjHZZ2xmn2AWBDeqOm0Y1RfU',
-        data: JSON.stringify( { "$set" : { "password" : newpass } } ),
-        contentType: "application/json"
+         method: 'POST',
+         headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+         url : "http://localhost:9080/FirstMongoProject/ModifyDocument",
+         data: { "email": sessionStorage.getItem("userEmail"),
+                 "username": sessionStorage.getItem("userName"),
+                 "oldpass": oldpass,
+                 "newpass": newpass
+               }
     }).success(function(data) {
         console.log(data);
         var alertPopup = $ionicPopup.alert({
